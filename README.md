@@ -1,4 +1,4 @@
-THE SCRIPT
+terraform-backend-http-gitlab-config-script 
 ======
 
 **NOTE!** This script is only intended for Linux kernel based Operating systems.
