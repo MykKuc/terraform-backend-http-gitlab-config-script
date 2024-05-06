@@ -1,7 +1,7 @@
 THE SCRIPT
 ======
 
-** NOTE! ** This script is only intended for Linux kernel based Operating systems.
+**NOTE!** This script is only intended for Linux kernel based Operating systems.
 
 This script sets up the environment variables necessary for Terraform backend type "http". This backend uses certain environment variables as indicated by documentation (https://developer.hashicorp.com/terraform/language/settings/backends/http).
 
