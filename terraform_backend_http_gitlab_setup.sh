@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/usr/bin/env bash
 
 echo "Starting the execution of the script for setting environment variables for Terraform http backend."
 
