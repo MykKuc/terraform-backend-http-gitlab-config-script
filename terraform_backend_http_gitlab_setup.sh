@@ -6,11 +6,15 @@ echo "Looping and checking if certain env variables are already set."
 
 terraform_http_backend_env_variables_values=("TF_HTTP_ADDRESS" "TF_HTTP_USERNAME" "TF_HTTP_PASSWORD")
 
+##Global variable for GitLab Terraform state address.
+gitlab_tf_state_address=""
+
 check_tf_http_address_format_correctness() {
     
     ##FIXME Fix this regex.
     if [[ "$1" =~ ^https://gitlab\.com/api/v4/projects/([0-9]+)/terraform/state/([^/\s]+)$ ]];then
         echo "Provided GitLab address is CORRECT !"
+        gitlab_tf_state_address=$1
         echo "export TF_HTTP_ADDRESS=$1" >> ~/.bashrc
         return 0
     else
@@ -42,13 +46,25 @@ implement_terraform_state_locking_configuration() {
     gitlab_lock_unclock_address_ending="/lock"
 
     echo "!! Setting up LOCK and UNLOCK addresses."
-    gitlab_tf_address_env_var=$(printenv TF_HTTP_ADDRESS)
 
-    gitlab_full_lock_unlock_address=$("$gitlab_tf_address_env_var$gitlab_lock_unclock_address_ending")
-    echo "Lock and unlock addresses are being set to: $gitlab_full_lock_unlock_address"
+    gitlab_full_lock_unlock_address="$gitlab_tf_state_address$gitlab_lock_unclock_address_ending"
 
-    echo "export TF_HTTP_LOCK_ADDRESS=$gitlab_full_lock_unlock_address" >> ~/.bashrc
-    echo "export TF_HTTP_UNLOCK_ADDRESS=$gitlab_full_lock_unlock_address" >> ~/.bashrc
+    ##TODO: Later  implement checking if LOCK and UNLOCK addresses are in the correct format.
+    if [ -z "$TF_HTTP_LOCK_ADDRESS" ];then
+
+        echo "LOCK address is being set to: $gitlab_full_lock_unlock_address"
+        echo "export TF_HTTP_LOCK_ADDRESS=$gitlab_full_lock_unlock_address" >> ~/.bashrc
+    else
+        echo "Environment variable TF_HTTP_LOCK_ADDRESS is already set."
+    fi
+
+    if [ -z "$TF_HTTP_UNLOCK_ADDRESS" ];then
+
+        echo "UNLOCK address is being set to: $gitlab_full_lock_unlock_address"
+        echo "export TF_HTTP_UNLOCK_ADDRESS=$gitlab_full_lock_unlock_address" >> ~/.bashrc
+    else
+        echo "Environment variable TF_HTTP_UNLOCK_ADDRESS is already set."
+    fi
 
     echo "!! Setting up lock and unlock methods !! "
     echo "If environment variables TF_HTTP_LOCK_METHOD and TF_HTTP_UNLOCK_METHOD are already set, then they will be overridden with methods POST and DELETE as indicated by GitLab documentation."
@@ -94,6 +110,7 @@ main() {
 
                 if check_tf_http_address_format_correctness "$retrieved_terraform_http_env_variable";then
                     echo "Env variable TF_HTTP_ADDRESS already exists and is correct."
+                    gitlab_tf_state_address=$(printenv "$TF_HTTP_ADDRESS")
                 else
                     echo "Existing env variable is incorrect. Please enter new one."
                     loop_until_correct_tf_http_address_entered
@@ -127,3 +144,10 @@ main() {
 
 ## Exceute main function.
 main
+
+sleep 7
+echo "EXITING THE SCRIPT !"
+sleep 3
+
+## This is added so shell in which the script is running would exit and user could not run the same script again in this shell, because otherwise it is not shown that env vars are set.
+exit 0
