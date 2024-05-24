@@ -11,7 +11,7 @@ check_tf_http_address_format_correctness() {
     ##FIXME Fix this regex.
     if [[ "$1" =~ ^https://gitlab\.com/api/v4/projects/([0-9]+)/terraform/state/([^/\s]+)$ ]];then
         echo "Provided GitLab address is CORRECT !"
-        export TF_HTTP_ADDRESS="$1"
+        echo "export TF_HTTP_ADDRESS=$1" >> ~/.bashrc
         return 0
     else
 
@@ -47,8 +47,8 @@ implement_terraform_state_locking_configuration() {
     gitlab_full_lock_unlock_address=$("$gitlab_tf_address_env_var$gitlab_lock_unclock_address_ending")
     echo "Lock and unlock addresses are being set to: $gitlab_full_lock_unlock_address"
 
-    export TF_HTTP_LOCK_ADDRESS="$gitlab_full_lock_unlock_address"
-    export TF_HTTP_UNLOCK_ADDRESS="$gitlab_full_lock_unlock_address"
+    echo "export TF_HTTP_LOCK_ADDRESS=$gitlab_full_lock_unlock_address" >> ~/.bashrc
+    echo "export TF_HTTP_UNLOCK_ADDRESS=$gitlab_full_lock_unlock_address" >> ~/.bashrc
 
     echo "!! Setting up lock and unlock methods !! "
     echo "If environment variables TF_HTTP_LOCK_METHOD and TF_HTTP_UNLOCK_METHOD are already set, then they will be overridden with methods POST and DELETE as indicated by GitLab documentation."
@@ -59,7 +59,7 @@ implement_terraform_state_locking_configuration() {
     if [ -z "$terraform_http_lock_method_env_variable_on_machine" ] || [ "$terraform_http_lock_method_env_variable_on_machine" != "$terraform_http_gitlab_lock_required_method" ];then
 
         echo "Environment variable TF_HTTP_LOCK_METHOD is either not set or set with incorrect method. Changing it now !"
-        export TF_HTTP_LOCK_METHOD="$terraform_http_gitlab_lock_required_method"
+        echo "export TF_HTTP_LOCK_METHOD=$terraform_http_gitlab_lock_required_method" >> ~/.bashrc
     else
 
         echo "Environment variable TF_HTTP_LOCK_METHOD is set correctly."
@@ -71,7 +71,7 @@ implement_terraform_state_locking_configuration() {
     if [ -z "$terraform_http_unlock_method_env_variable_on_machine" ] || [ "$terraform_http_unlock_method_env_variable_on_machine" != "$terraform_http_gitlab_unlock_required_method" ];then
 
         echo "Environment variable TF_HTTP_UNLOCK_METHOD is either not set or set with incorrect method. Changing it now !"
-        export TF_HTTP_UNLOCK_METHOD="$terraform_http_gitlab_unlock_required_method"
+        echo "export TF_HTTP_UNLOCK_METHOD=$terraform_http_gitlab_unlock_required_method" >> ~/.bashrc 
     else
 
         echo "Environment variable TF_HTTP_UNLOCK_METHOD is set correctly."
@@ -110,7 +110,7 @@ main() {
                 echo "Please enter value for Environment variable $terraform_env_variable below:"
                 read user_env_variable_input
                 echo "User has inputed $user_env_variable_input . "
-                export "$terraform_env_variable"="$user_env_variable_input"
+                echo "export $terraform_env_variable=$user_env_variable_input" >> ~/.bashrc
             fi
         fi
 
