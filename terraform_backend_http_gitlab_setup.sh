@@ -15,7 +15,11 @@ check_tf_http_address_format_correctness() {
     if [[ "$1" =~ ^https://gitlab\.com/api/v4/projects/([0-9]+)/terraform/state/([^/\s]+)$ ]];then
         echo "Provided GitLab address is CORRECT !"
         gitlab_tf_state_address=$1
-        echo "export TF_HTTP_ADDRESS=$1" >> ~/.bashrc
+
+        if [ -z "$2" ]; then 
+            echo "export TF_HTTP_ADDRESS=$1" >> ~/.bashrc
+        fi
+
         return 0
     else
 
@@ -108,7 +112,7 @@ main() {
             if [ "$terraform_env_variable" = "TF_HTTP_ADDRESS" ];then
                 echo "This is TF_HTTP_ADDRESS env variable. Running operation to check correctness of the address."
 
-                if check_tf_http_address_format_correctness "$retrieved_terraform_http_env_variable";then
+                if check_tf_http_address_format_correctness "$retrieved_terraform_http_env_variable" "only-check";then
                     echo "Env variable TF_HTTP_ADDRESS already exists and is correct."
                     gitlab_tf_state_address=$(printenv "$TF_HTTP_ADDRESS")
                 else
