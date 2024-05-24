@@ -1,7 +1,7 @@
 terraform-backend-http-gitlab-config-script 
 ======
 
-**NOTE!** This script is only intended for Linux kernel based Operating systems.
+**NOTE!** This script is only intended for Linux kernel based Operating systems. This script is only intended for Bash Unix shell.
 
 After navigating to the script directory, the script should be run using command ` . ./terraform_backend_http_gitlab_setup.sh` , because otherwise (if only command `./terraform_backend_http_gitlab_setup.sh` is run) the script will execute in the subshell and the environment variables will not be set for the system.
 
